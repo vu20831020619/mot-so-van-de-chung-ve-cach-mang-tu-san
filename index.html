@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 1: Một số vấn đề chung về Cách mạng tư sản</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            scroll-behavior: smooth;
+            background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+        }
+        .station-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(209, 213, 219, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .station-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: #F47B20;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+        }
+        .timeline-container {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
+        }
+        .timeline-container::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            right: -17px;
+            background-color: white;
+            border: 4px solid #00A9E0;
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        .left {
+            left: 0;
+        }
+        .right {
+            left: 50%;
+        }
+        .right::after {
+            left: -16px;
+        }
+        .content {
+            padding: 20px 30px;
+            background-color: white;
+            position: relative;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .cycle-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            aspect-ratio: 1/1;
+            margin: 2rem auto;
+        }
+        .cycle-item {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transform: translate(-50%, -50%);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .cycle-item:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        .cycle-arrow {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            transform-origin: center;
+        }
+        .draggable {
+            cursor: move;
+            user-select: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .draggable:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+        .drop-zone {
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .drop-zone.over {
+            background-color: #d1fae5;
+            border-color: #10b981;
+        }
+        .match-item {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .match-item.selected {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 169, 224, 0.7);
+            border-color: #00A9E0;
+            z-index: 10;
+        }
+        .match-item.correct {
+            background-image: linear-gradient(45deg, #7DBA43 0%, #B8E986 100%) !important;
+            color: white;
+            pointer-events: none;
+            box-shadow: 0 0 15px rgba(125, 186, 67, 0.7);
+            border-color: transparent;
+        }
+        [lang="en"] { display: none; }
+        .gradient-bg-blue {
+            background: linear-gradient(45deg, #00A9E0 0%, #4DC8E5 100%);
+        }
+        .gradient-bg-orange {
+            background: linear-gradient(45deg, #F47B20 0%, #FF9E59 100%);
+        }
+        .gradient-bg-green {
+            background: linear-gradient(45deg, #7DBA43 0%, #B8E986 100%);
+        }
+        .gradient-bg-pink {
+            background: linear-gradient(45deg, #E6007E 0%, #FF4DAA 100%);
+        }
+        .gradient-bg-yellow {
+            background: linear-gradient(45deg, #FDB913 0%, #FFD66A 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <header class="bg-white shadow-lg sticky top-0 z-50 py-4">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl md:text-3xl font-bold text-[#00A9E0]">
+                    <span lang="vi">Bài 1: Vấn đề chung về Cách mạng tư sản</span>
+                    <span lang="en">Lesson 1: General Issues of Bourgeois Revolutions</span>
+                </h1>
+                <p class="text-sm md:text-base text-gray-600">
+                    <span lang="vi">Môn Lịch sử - Lớp 11</span>
+                    <span lang="en">History - Grade 11</span>
+                </p>
+            </div>
+            <div>
+                <button onclick="setLang('vi')" class="px-3 py-1 gradient-bg-blue text-white rounded-md text-sm shadow-md hover:shadow-lg transition">VIE</button>
+                <button onclick="setLang('en')" class="px-3 py-1 gradient-bg-orange text-white rounded-md text-sm shadow-md hover:shadow-lg transition">ENG</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+        
+        <nav class="mb-8 p-4 bg-white rounded-lg shadow-md">
+            <h2 class="font-bold text-xl mb-3 text-[#E6007E]">
+                <span lang="vi">Điều hướng nhanh</span>
+                <span lang="en">Quick Navigation</span>
+            </h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <a href="#station1" class="text-center gradient-bg-blue text-white py-2 px-4 rounded-lg hover:shadow-lg transition">
+                    <span lang="vi"><i class="fas fa-eye mr-2"></i>Trạm 1: Toàn cảnh</span><span lang="en"><i class="fas fa-eye mr-2"></i>Station 1: Overview</span>
+                </a>
+                <a href="#station2" class="text-center gradient-bg-green text-white py-2 px-4 rounded-lg hover:shadow-lg transition">
+                    <span lang="vi"><i class="fas fa-seedling mr-2"></i>Trạm 2: Tiền đề</span><span lang="en"><i class="fas fa-seedling mr-2"></i>Station 2: Prerequisites</span>
+                </a>
+                <a href="#station3" class="text-center gradient-bg-orange text-white py-2 px-4 rounded-lg hover:shadow-lg transition">
+                    <span lang="vi"><i class="fas fa-hammer mr-2"></i>Trạm 3: Thành tố</span><span lang="en"><i class="fas fa-hammer mr-2"></i>Station 3: Components</span>
+                </a>
+                <a href="#station4" class="text-center gradient-bg-yellow text-white py-2 px-4 rounded-lg hover:shadow-lg transition">
+                    <span lang="vi"><i class="fas fa-brain mr-2"></i>Trạm 4: Vận dụng</span><span lang="en"><i class="fas fa-brain mr-2"></i>Station 4: Application</span>
+                </a>
+            </div>
+        </nav>
+
+        <section id="station1" class="mb-12">
+            <div class="p-6 md:p-8 rounded-xl shadow-2xl station-card border-l-8 border-[#00A9E0]">
+                <h2 class="text-3xl font-bold mb-4 text-[#00A9E0]">
+                    <span lang="vi">Trạm 1: Toàn cảnh về Cách mạng tư sản</span>
+                    <span lang="en">Station 1: Overview of Bourgeois Revolutions</span>
+                </h2>
+
+                <div class="mb-8">
+                    <h3 class="text-2xl font-semibold mb-3 text-gray-700">
+                        <span lang="vi"><i class="fas fa-tags mr-2"></i>Từ khóa chính</span><span lang="en"><i class="fas fa-tags mr-2"></i>Main Keywords</span>
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 gradient-bg-blue text-white rounded-full text-sm shadow-md">
+                            <span lang="vi">Cách mạng tư sản</span><span lang="en">Bourgeois Revolution</span>
+                        </span>
+                        <span class="px-3 py-1 gradient-bg-orange text-white rounded-full text-sm shadow-md">
+                            <span lang="vi">Chủ nghĩa tư bản</span><span lang="en">Capitalism</span>
+                        </span>
+                        <span class="px-3 py-1 gradient-bg-green text-white rounded-full text-sm shadow-md">
+                            <span lang="vi">Giai cấp tư sản</span><span lang="en">Bourgeoisie</span>
+                        </span>
+                         <span class="px-3 py-1 gradient-bg-pink text-white rounded-full text-sm shadow-md">
+                            <span lang="vi">Chế độ phong kiến</span><span lang="en">Feudalism</span>
+                        </span>
+                        <span class="px-3 py-1 gradient-bg-yellow text-gray-800 rounded-full text-sm shadow-md">
+                            <span lang="vi">Tuyên ngôn</span><span lang="en">Declaration</span>
+                        </span>
+                        <span class="px-3 py-1 gradient-bg-blue text-white rounded-full text-sm shadow-md">
+                            <span lang="vi">Triết học Ánh sáng</span><span lang="en">Enlightenment Philosophy</span>
+                        </span>
+                        <span class="px-3 py-1 gradient-bg-orange text-white rounded-full text-sm shadow-md">
+                            <span lang="vi">Quý tộc mới</span><span lang="en">New Aristocracy</span>
+                        </span>
+                        <span class="px-3 py-1 gradient-bg-green text-white rounded-full text-sm shadow-md">
+                            <span lang="vi">Quân chủ lập hiến</span><span lang="en">Constitutional Monarchy</span>
+                        </span>
+                        <span class="px-3 py-1 gradient-bg-pink text-white rounded-full text-sm shadow-md">
+                            <span lang="vi">Cộng hòa</span><span lang="en">Republic</span>
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="mb-8 p-6 bg-blue-50 rounded-lg shadow-inner">
+                    <h3 class="text-2xl font-semibold mb-4 text-gray-700">
+                        <span lang="vi"><i class="fas fa-info-circle mr-2"></i>Góc em có biết: Tây Âu thời phong kiến và trung đại</span>
+                        <span lang="en"><i class="fas fa-info-circle mr-2"></i>Did you know: Western Europe in Feudal and Medieval Times</span>
+                    </h3>
+                    <p class="mb-4">
+                        <span lang="vi">Sự nảy sinh của chủ nghĩa tư bản đã tạo ra những biến đổi sâu sắc trong lòng xã hội phong kiến Tây Âu, dẫn đến sự phân hóa giai cấp và mâu thuẫn ngày càng gay gắt.</span>
+                        <span lang="en">The emergence of capitalism created profound changes within Western European feudal society, leading to class differentiation and increasingly sharp conflicts.</span>
+                    </p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="gradient-bg-blue text-white shadow-md">
+                                    <th class="p-3 border rounded-tl-lg">
+                                        <span lang="vi">Yếu tố</span><span lang="en">Factor</span>
+                                    </th>
+                                    <th class="p-3 border">
+                                        <span lang="vi">Tây Âu thời phong kiến</span><span lang="en">Feudal Western Europe</span>
+                                    </th>
+                                    <th class="p-3 border rounded-tr-lg">
+                                        <span lang="vi">Tây Âu khi CNTB nảy sinh (hậu kỳ trung đại)</span><span lang="en">Western Europe with emerging Capitalism (Late Middle Ages)</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="hover:bg-gray-100 transition">
+                                    <td class="p-3 border font-semibold">
+                                        <span lang="vi">Kinh tế</span><span lang="en">Economy</span>
+                                    </td>
+                                    <td class="p-3 border">
+                                        <span lang="vi">Nông nghiệp khép kín, tự cung tự cấp là chủ đạo.</span><span lang="en">Closed, self-sufficient agriculture was dominant.</span>
+                                    </td>
+                                    <td class="p-3 border">
+                                        <span lang="vi">Kinh tế hàng hóa, công trường thủ công, thương mại phát triển. Phương thức sản xuất TBCN ra đời.</span><span lang="en">Commodity economy, manufactories, and trade developed. The capitalist mode of production emerged.</span>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-100 transition">
+                                    <td class="p-3 border font-semibold">
+                                        <span lang="vi">Giai cấp</span><span lang="en">Classes</span>
+                                    </td>
+                                    <td class="p-3 border">
+                                        <span lang="vi">Lãnh chúa và nông nô là hai giai cấp cơ bản.</span><span lang="en">Lords and serfs were the two basic classes.</span>
+                                    </td>
+                                    <td class="p-3 border">
+                                        <span lang="vi">Xuất hiện các giai cấp mới: tư sản và vô sản. Mâu thuẫn giữa tư sản với quý tộc phong kiến và giáo hội.</span><span lang="en">New classes appeared: bourgeoisie and proletariat. Conflict between the bourgeoisie and the feudal aristocracy and the church.</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mb-8 p-6 bg-white rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-semibold mb-3 text-gray-700">
+                        <span lang="vi"><i class="fas fa-book-open mr-2"></i>Khái niệm Cách mạng tư sản</span><span lang="en"><i class="fas fa-book-open mr-2"></i>Concept of Bourgeois Revolution</span>
+                    </h3>
+                    <p class="gradient-bg-orange text-white p-4 rounded-lg italic border-l-4 border-orange-200 shadow-md">
+                        <span lang="vi">Là cuộc cách mạng do giai cấp tư sản lãnh đạo (hoặc liên minh với quý tộc mới) nhằm lật đổ chế độ phong kiến, thực dân, mở đường cho chủ nghĩa tư bản phát triển, xác lập sự thống trị của giai cấp tư sản.</span>
+                        <span lang="en">It is a revolution led by the bourgeoisie (or in alliance with the new aristocracy) aimed at overthrowing feudal, colonial regimes, paving the way for capitalist development, and establishing the dominance of the bourgeoisie.</span>
+                    </p>
+                </div>
+                
+                <div class="mb-6 p-6 bg-white rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-semibold mb-6 text-center text-gray-700">
+                        <span lang="vi"><i class="fas fa-clock mr-2"></i>Dòng thời gian các cuộc cách mạng tư sản tiêu biểu</span>
+                        <span lang="en"><i class="fas fa-clock mr-2"></i>Timeline of Typical Bourgeois Revolutions</span>
+                    </h3>
+                    <div class="timeline">
+                        <div class="timeline-container left">
+                            <div class="content gradient-bg-blue text-white shadow-lg transition hover:scale-105">
+                                <h3 class="font-bold text-lg text-white">1640 - 1688</h3>
+                                <p>
+                                    <span lang="vi">Cách mạng tư sản Anh</span>
+                                    <span lang="en">English Civil War</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="timeline-container right">
+                            <div class="content gradient-bg-orange text-white shadow-lg transition hover:scale-105">
+                                <h3 class="font-bold text-lg text-white">1775 - 1783</h3>
+                                <p>
+                                    <span lang="vi">Chiến tranh giành độc lập của 13 thuộc địa ở Bắc Mỹ</span>
+                                    <span lang="en">War of Independence of the 13 Colonies in North America</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="timeline-container left">
+                            <div class="content gradient-bg-green text-white shadow-lg transition hover:scale-105">
+                                <h3 class="font-bold text-lg text-white">1789 - 1799</h3>
+                                <p>
+                                    <span lang="vi">Cách mạng tư sản Pháp</span>
+                                    <span lang="en">French Revolution</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                     <p class="text-center mt-8 text-lg font-medium text-gray-700">
+                        <span lang="vi">"Vậy những vấn đề chung nào được đề cập khi nhắc đến các cuộc cách mạng tư sản?"</span>
+                        <span lang="en">"So, what common issues are addressed when discussing bourgeois revolutions?"</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="station2" class="mb-12">
+            <div class="p-6 md:p-8 rounded-xl shadow-2xl station-card border-l-8 border-[#7DBA43]">
+                <h2 class="text-3xl font-bold mb-4 text-[#7DBA43]">
+                    <span lang="vi">Trạm 2: Các tiền đề của cách mạng</span>
+                    <span lang="en">Station 2: Prerequisites of Revolution</span>
+                </h2>
+
+                 <div class="mb-8 p-6 bg-green-50 rounded-lg shadow-inner">
+                    <h3 class="text-2xl font-semibold mb-4 text-center text-gray-700">
+                        <span lang="vi"><i class="fas fa-sync-alt mr-2"></i>Vòng tròn tuần hoàn về các tiền đề bùng nổ cách mạng</span>
+                        <span lang="en"><i class="fas fa-sync-alt mr-2"></i>The Cyclical Model of Revolutionary Prerequisites</span>
+                    </h3>
+                    <p class="text-center mb-6 max-w-3xl mx-auto">
+                        <span lang="vi">Các tiền đề của cách mạng tư sản có mối quan hệ nhân-quả, tác động qua lại, tạo thành một vòng lặp thúc đẩy bùng nổ cách mạng. Kinh tế là nền tảng, làm thay đổi xã hội, dẫn đến xung đột chính trị và cuối cùng được châm ngòi bởi các tư tưởng mới.</span>
+                        <span lang="en">The prerequisites of a bourgeois revolution have a cause-and-effect relationship, interacting to form a loop that triggers the revolutionary outbreak. The economy is the foundation, changing society, leading to political conflicts, and finally ignited by new ideologies.</span>
+                    </p>
+                    <div class="cycle-container">
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="p-6 rounded-lg bg-white shadow-lg">
+                        <h3 class="text-xl font-semibold mb-3 text-[#7DBA43]">
+                            <span lang="vi"><i class="fas fa-chart-line mr-2"></i>1. Tiền đề kinh tế</span><span lang="en"><i class="fas fa-chart-line mr-2"></i>1. Economic Prerequisite</span>
+                        </h3>
+                        <p class="mb-4">
+                            <span lang="vi">Sự phát triển của kinh tế tư bản chủ nghĩa trong lòng chế độ phong kiến. Các công trường thủ công, trung tâm thương mại và ngân hàng xuất hiện, tạo ra mâu thuẫn giữa quan hệ sản xuất TBCN mới và quan hệ sản xuất phong kiến lỗi thời.</span>
+                            <span lang="en">The development of the capitalist economy within the feudal system. Manufactories, commercial centers, and banks emerged, creating a conflict between new capitalist relations of production and outdated feudal relations.</span>
+                        </p>
+                        <div class="chart-container h-64 md:h-80 w-full max-w-md mx-auto">
+                            <canvas id="economicChart"></canvas>
+                        </div>
+                         <p class="text-sm text-center mt-2 italic">
+                            <span lang="vi">Biểu đồ mô phỏng sự gia tăng sản lượng công nghiệp thủ công ở Anh.</span>
+                            <span lang="en">Chart simulating the increase in handicraft industrial output in England.</span>
+                        </p>
+                    </div>
+
+                    <div class="p-6 rounded-lg bg-white shadow-lg">
+                        <h3 class="text-xl font-semibold mb-3 text-[#7DBA43]">
+                            <span lang="vi"><i class="fas fa-landmark mr-2"></i>2. Tiền đề chính trị</span><span lang="en"><i class="fas fa-landmark mr-2"></i>2. Political Prerequisite</span>
+                        </h3>
+                        <p class="mb-4">
+                             <span lang="vi">Chế độ quân chủ chuyên chế hoặc sự cai trị của ngoại bang cản trở sự phát triển của giai cấp tư sản. Các chính sách thuế khóa, độc quyền của nhà nước phong kiến gây bất mãn cho tư sản và các tầng lớp nhân dân.</span>
+                            <span lang="en">The absolute monarchy or foreign rule hindered the development of the bourgeoisie. The tax policies and monopolies of the feudal state caused discontent among the bourgeoisie and other classes.</span>
+                        </p>
+                        <div class="chart-container h-64 md:h-80 w-full max-w-md mx-auto">
+                            <canvas id="politicalChart"></canvas>
+                        </div>
+                        <p class="text-sm text-center mt-2 italic">
+                            <span lang="vi">Biểu đồ tròn thể hiện cơ cấu ba đẳng cấp trong xã hội Pháp.</span>
+                            <span lang="en">Pie chart showing the structure of the Three Estates in French society.</span>
+                        </p>
+                    </div>
+
+                    <div class="p-6 rounded-lg bg-white shadow-lg">
+                        <h3 class="text-xl font-semibold mb-3 text-[#7DBA43]">
+                            <span lang="vi"><i class="fas fa-users mr-2"></i>3. Tiền đề xã hội</span><span lang="en"><i class="fas fa-users mr-2"></i>3. Social Prerequisite</span>
+                        </h3>
+                        <p class="mb-4">
+                            <span lang="vi">Mâu thuẫn xã hội gay gắt giữa giai cấp tư sản, quần chúng nhân dân với giai cấp phong kiến, quý tộc. Nông dân, công nhân, thị dân bị áp bức, bóc lột nặng nề, sẵn sàng tham gia cách mạng.</span>
+                            <span lang="en">Sharp social conflicts between the bourgeoisie, the masses, and the feudal class/aristocracy. Peasants, workers, and townspeople were heavily oppressed and exploited, ready to join the revolution.</span>
+                        </p>
+                        <div class="chart-container h-64 md:h-80 w-full max-w-md mx-auto">
+                            <canvas id="socialChart"></canvas>
+                        </div>
+                         <p class="text-sm text-center mt-2 italic">
+                            <span lang="vi">Biểu đồ cột so sánh gánh nặng thuế giữa các đẳng cấp.</span>
+                            <span lang="en">Bar chart comparing the tax burden among the estates.</span>
+                        </p>
+                    </div>
+
+                    <div class="p-6 rounded-lg bg-white shadow-lg">
+                        <h3 class="text-xl font-semibold mb-3 text-[#7DBA43]">
+                            <span lang="vi"><i class="fas fa-lightbulb mr-2"></i>4. Tiền đề tư tưởng</span><span lang="en"><i class="fas fa-lightbulb mr-2"></i>4. Ideological Prerequisite</span>
+                        </h3>
+                        <p class="mb-4">
+                            <span lang="vi">Trào lưu "Triết học Ánh sáng" với các nhà tư tưởng tiêu biểu như Montesquieu, Voltaire, Rousseau đã tấn công vào hệ tư tưởng của chế độ phong kiến, đề cao lí trí, quyền tự do và bình đẳng, soi đường cho cách mạng.</span>
+                            <span lang="en">The "Enlightenment" movement, with prominent thinkers like Montesquieu, Voltaire, and Rousseau, attacked the ideology of the feudal regime, promoting reason, freedom, and equality, thus illuminating the path for revolution.</span>
+                        </p>
+                        <div class="chart-container h-64 md:h-80 w-full max-w-md mx-auto">
+                           <canvas id="ideologyChart"></canvas>
+                        </div>
+                        <p class="text-sm text-center mt-2 italic">
+                            <span lang="vi">Biểu đồ thể hiện sự lan tỏa của các tác phẩm Ánh sáng.</span>
+                            <span lang="en">Chart showing the spread of Enlightenment works.</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="station3" class="mb-12">
+            <div class="p-6 md:p-8 rounded-xl shadow-2xl station-card border-l-8 border-[#F47B20]">
+                <h2 class="text-3xl font-bold mb-6 text-[#F47B20]">
+                    <span lang="vi">Trạm 3: Các thành tố chính của cách mạng</span>
+                    <span lang="en">Station 3: Key Components of a Revolution</span>
+                </h2>
+
+                <div id="section4-1" class="mb-8 p-6 bg-orange-50 rounded-lg shadow-inner">
+                    <h3 class="text-2xl font-semibold mb-4 text-gray-700">
+                        <span lang="vi"><i class="fas fa-chart-bar mr-2"></i>4.1 Bảng so sánh chi tiết các cuộc cách mạng tư sản tiêu biểu</span>
+                        <span lang="en"><i class="fas fa-chart-bar mr-2"></i>4.1 Detailed Comparison of Typical Bourgeois Revolutions</span>
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse bg-white shadow-md rounded-lg">
+                            <thead>
+                                <tr class="gradient-bg-orange text-white shadow-md">
+                                    <th class="p-3 border rounded-tl-lg"><span lang="vi">Nội dung</span><span lang="en">Content</span></th>
+                                    <th class="p-3 border"><span lang="vi">CMTS Anh</span><span lang="en">English Revolution</span></th>
+                                    <th class="p-3 border"><span lang="vi">Chiến tranh giành độc lập 13 thuộc địa</span><span lang="en">War of Independence of 13 Colonies</span></th>
+                                    <th class="p-3 border rounded-tr-lg"><span lang="vi">CMTS Pháp</span><span lang="en">French Revolution</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="p-3 border font-semibold"><span lang="vi">Mục tiêu</span><span lang="en">Objective</span></td>
+                                    <td class="p-3 border"><span lang="vi">Lật đổ chế độ phong kiến chuyên chế, xác lập chế độ quân chủ lập hiến.</span><span lang="en">Overthrow the absolute monarchy, establish a constitutional monarchy.</span></td>
+                                    <td class="p-3 border"><span lang="vi">Giành độc lập dân tộc, thành lập nhà nước cộng hòa.</span><span lang="en">Achieve national independence, establish a republic.</span></td>
+                                    <td class="p-3 border"><span lang="vi">Lật đổ chế độ phong kiến, xác lập chế độ cộng hòa, giải quyết vấn đề dân chủ.</span><span lang="en">Overthrow the feudal regime, establish a republic, address democratic issues.</span></td>
+                                </tr>
+                                 <tr class="hover:bg-gray-50 transition">
+                                    <td class="p-3 border font-semibold"><span lang="vi">Nhiệm vụ</span><span lang="en">Task</span></td>
+                                    <td class="p-3 border"><span lang="vi">Dân tộc: Chống lại sự can thiệp của nước ngoài. Dân chủ: Xóa bỏ chế độ phong kiến.</span><span lang="en">National: Resist foreign intervention. Democratic: Abolish the feudal system.</span></td>
+                                    <td class="p-3 border"><span lang="vi">Dân tộc: Giành độc lập, thống nhất đất nước. Dân chủ: Mở rộng quyền tự do, dân chủ.</span><span lang="en">National: Achieve independence, unify the country. Democratic: Expand freedom and democracy.</span></td>
+                                    <td class="p-3 border"><span lang="vi">Dân tộc: Bảo vệ tổ quốc. Dân chủ: Xóa bỏ triệt để chế độ phong kiến, giải quyết vấn đề ruộng đất.</span><span lang="en">National: Defend the homeland. Democratic: Radically abolish the feudal system, resolve land issues.</span></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="p-3 border font-semibold"><span lang="vi">Lãnh đạo</span><span lang="en">Leadership</span></td>
+                                    <td class="p-3 border"><span lang="vi">Giai cấp tư sản và quý tộc mới.</span><span lang="en">Bourgeoisie and New Aristocracy.</span></td>
+                                    <td class="p-3 border"><span lang="vi">Giai cấp tư sản, chủ nô.</span><span lang="en">Bourgeoisie, slave owners.</span></td>
+                                    <td class="p-3 border"><span lang="vi">Giai cấp tư sản.</span><span lang="en">Bourgeoisie.</span></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="p-3 border font-semibold"><span lang="vi">Động lực</span><span lang="en">Driving Force</span></td>
+                                    <td class="p-3 border"><span lang="vi">Quần chúng nhân dân (nông dân, thợ thủ công).</span><span lang="en">The masses (peasants, artisans).</span></td>
+                                    <td class="p-3 border"><span lang="vi">Quần chúng nhân dân (công nhân, nông dân, nô lệ).</span><span lang="en">The masses (workers, farmers, slaves).</span></td>
+                                    <td class="p-3 border"><span lang="vi">Quần chúng nhân dân (nông dân, bình dân thành thị).</span><span lang="en">The masses (peasants, urban commoners).</span></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="p-3 border font-semibold"><span lang="vi">Kết quả</span><span lang="en">Result</span></td>
+                                    <td class="p-3 border"><span lang="vi">Thiết lập chế độ quân chủ lập hiến.</span><span lang="en">Established a constitutional monarchy.</span></td>
+                                    <td class="p-3 border"><span lang="vi">Thành lập Hợp chúng quốc Mỹ, nhà nước cộng hòa tư sản đầu tiên.</span><span lang="en">Founded the United States of America, the first bourgeois republic.</span></td>
+                                    <td class="p-3 border"><span lang="vi">Lật đổ chế độ phong kiến, thiết lập nền cộng hòa.</span><span lang="en">Overthrew the feudal regime, established a republic.</span></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="p-3 border font-semibold"><span lang="vi">Ý nghĩa</span><span lang="en">Significance</span></td>
+                                    <td class="p-3 border"><span lang="vi">Mở đường cho CNTB Anh phát triển mạnh mẽ.</span><span lang="en">Paved the way for strong capitalist development in England.</span></td>
+                                    <td class="p-3 border"><span lang="vi">Cổ vũ phong trào đấu tranh giành độc lập trên thế giới.</span><span lang="en">Inspired independence movements worldwide.</span></td>
+                                    <td class="p-3 border"><span lang="vi">Ảnh hưởng sâu rộng đến phong trào cách mạng thế giới, là cuộc cách mạng tư sản triệt để nhất.</span><span lang="en">Profoundly influenced world revolutionary movements, the most radical bourgeois revolution.</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="section4-2" class="mb-8">
+                     <h3 class="text-2xl font-semibold mb-2 text-gray-700">
+                        <span lang="vi"><i class="fas fa-bullseye mr-2"></i>4.2 Mục tiêu chung</span><span lang="en"><i class="fas fa-bullseye mr-2"></i>4.2 General Objective</span>
+                    </h3>
+                    <p class="p-4 bg-white rounded-lg shadow-lg">
+                         <span lang="vi">Mục tiêu chung của các cuộc cách mạng tư sản là lật đổ chế độ phong kiến, thực dân và những tàn dư của nó, tạo điều kiện cho sự phát triển của nền kinh tế tư bản chủ nghĩa, thiết lập chính quyền của giai cấp tư sản.</span>
+                        <span lang="en">The common goal of bourgeois revolutions is to overthrow feudal and colonial regimes and their remnants, create conditions for the development of the capitalist economy, and establish the rule of the bourgeoisie.</span>
+                    </p>
+                </div>
+
+                <div id="section4-3" class="mb-8">
+                     <h3 class="text-2xl font-semibold mb-4 text-gray-700">
+                        <span lang="vi"><i class="fas fa-tasks mr-2"></i>4.3 Nhiệm vụ</span><span lang="en"><i class="fas fa-tasks mr-2"></i>4.3 Tasks</span>
+                    </h3>
+                     <p class="mb-4">
+                        <span lang="vi">Các cuộc cách mạng tư sản thực hiện hai nhiệm vụ chính là nhiệm vụ dân tộc và nhiệm vụ dân chủ, mức độ hoàn thành hai nhiệm vụ này khác nhau ở mỗi cuộc cách mạng.</span>
+                        <span lang="en">Bourgeois revolutions carry out two main tasks: the national task and the democratic task. The degree of completion of these two tasks varies in each revolution.</span>
+                    </p>
+                     <div class="grid md:grid-cols-3 gap-8 mb-8">
+                        <div class="p-4 bg-gray-50 rounded-lg shadow-md">
+                            <h4 class="text-lg font-bold text-center mb-2 text-blue-700">
+                                <span lang="vi">Anh</span><span lang="en">England</span>
+                            </h4>
+                            <div class="chart-container h-48 w-full max-w-xs mx-auto">
+                                <canvas id="englandTaskChart"></canvas>
+                            </div>
+                            <p class="text-sm text-center mt-2 italic">
+                                <span lang="vi">Nhiệm vụ dân chủ là trọng tâm chính của cách mạng này.</span>
+                                <span lang="en">The democratic task was the main focus of this revolution.</span>
+                            </p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg shadow-md">
+                            <h4 class="text-lg font-bold text-center mb-2 text-green-700">
+                                <span lang="vi">Bắc Mỹ</span><span lang="en">North America</span>
+                            </h4>
+                            <div class="chart-container h-48 w-full max-w-xs mx-auto">
+                                <canvas id="americaTaskChart"></canvas>
+                            </div>
+                            <p class="text-sm text-center mt-2 italic">
+                                <span lang="vi">Nhiệm vụ dân tộc (giành độc lập) là mục tiêu hàng đầu.</span>
+                                <span lang="en">The national task (gaining independence) was the primary goal.</span>
+                            </p>
+                        </div>
+                         <div class="p-4 bg-gray-50 rounded-lg shadow-md">
+                            <h4 class="text-lg font-bold text-center mb-2 text-orange-700">
+                                <span lang="vi">Pháp</span><span lang="en">France</span>
+                            </h4>
+                            <div class="chart-container h-48 w-full max-w-xs mx-auto">
+                                <canvas id="franceTaskChart"></canvas>
+                            </div>
+                            <p class="text-sm text-center mt-2 italic">
+                                <span lang="vi">Hoàn thành triệt để cả hai nhiệm vụ dân tộc và dân chủ.</span>
+                                <span lang="en">Radically completed both national and democratic tasks.</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="p-6 bg-white rounded-lg shadow-lg">
+                        <h4 class="text-xl font-bold text-center mb-4 text-[#E6007E]">
+                            <span lang="vi"><i class="fas fa-gamepad mr-2"></i>Trò chơi: Kéo thả thông tin</span>
+                            <span lang="en"><i class="fas fa-gamepad mr-2"></i>Game: Drag and Drop Information</span>
+                        </h4>
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <div class="flex-1">
+                                <h5 class="text-center font-semibold p-2 gradient-bg-blue rounded-t-lg text-white">
+                                    <span lang="vi">Thẻ thông tin</span><span lang="en">Information Cards</span>
+                                </h5>
+                                <div id="draggable-items" class="p-4 bg-gray-50 rounded-b-lg flex flex-wrap gap-2 justify-center">
+                                    <div class="draggable p-2 gradient-bg-yellow text-gray-800 rounded-md shadow" draggable="true" data-type="national">
+                                        <span lang="vi">Giành độc lập dân tộc</span><span lang="en">Achieve national independence</span>
+                                    </div>
+                                    <div class="draggable p-2 gradient-bg-yellow text-gray-800 rounded-md shadow" draggable="true" data-type="democratic">
+                                        <span lang="vi">Xóa bỏ chế độ phong kiến chuyên chế</span><span lang="en">Abolish the absolute feudal regime</span>
+                                    </div>
+                                    <div class="draggable p-2 gradient-bg-yellow text-gray-800 rounded-md shadow" draggable="true" data-type="national">
+                                        <span lang="vi">Thống nhất thị trường dân tộc</span><span lang="en">Unify the national market</span>
+                                    </div>
+                                    <div class="draggable p-2 gradient-bg-yellow text-gray-800 rounded-md shadow" draggable="true" data-type="democratic">
+                                        <span lang="vi">Thiết lập nhà nước cộng hòa</span><span lang="en">Establish a republic state</span>
+                                    </div>
+                                    <div class="draggable p-2 gradient-bg-yellow text-gray-800 rounded-md shadow" draggable="true" data-type="democratic">
+                                        <span lang="vi">Ban bố quyền dân chủ tư sản</span><span lang="en">Promulgate bourgeois democratic rights</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-1 drop-zone border-2 border-dashed border-blue-400 rounded-lg p-4 min-h-[150px]" data-type="national">
+                                <h5 class="text-center font-semibold text-blue-800 mb-2">
+                                    <span lang="vi">Nhiệm vụ Dân tộc</span><span lang="en">National Task</span>
+                                </h5>
+                                <div class="drop-content flex flex-col gap-2"></div>
+                            </div>
+                            <div class="flex-1 drop-zone border-2 border-dashed border-green-400 rounded-lg p-4 min-h-[150px]" data-type="democratic">
+                                <h5 class="text-center font-semibold text-green-800 mb-2">
+                                    <span lang="vi">Nhiệm vụ Dân chủ</span><span lang="en">Democratic Task</span>
+                                </h5>
+                                <div class="drop-content flex flex-col gap-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                 <div class="grid md:grid-cols-2 gap-8 mb-8">
+                    <div id="section4-4" class="p-6 bg-white rounded-lg shadow-lg">
+                         <h3 class="text-2xl font-semibold mb-2 text-gray-700">
+                            <span lang="vi"><i class="fas fa-user-tie mr-2"></i>4.4 Giai cấp lãnh đạo</span><span lang="en"><i class="fas fa-user-tie mr-2"></i>4.4 Leading Class</span>
+                        </h3>
+                        <p class="mb-4">
+                            <span lang="vi">Giai cấp tư sản, một mình hoặc liên minh với tầng lớp quý tộc mới, lãnh đạo cách mạng. Họ là giai cấp đại diện cho phương thức sản xuất mới, có tiềm lực kinh tế và tư tưởng tiến bộ.</span>
+                            <span lang="en">The bourgeoisie, alone or in alliance with the new aristocracy, led the revolution. They represented the new mode of production, had economic power, and progressive ideas.</span>
+                        </p>
+                        <div class="chart-container h-64 md:h-72 w-full max-w-sm mx-auto">
+                            <canvas id="leadershipChart"></canvas>
+                        </div>
+                    </div>
+                     <div id="section4-5" class="p-6 bg-white rounded-lg shadow-lg">
+                         <h3 class="text-2xl font-semibold mb-2 text-gray-700">
+                            <span lang="vi"><i class="fas fa-fist-raised mr-2"></i>4.5 Động lực cách mạng</span><span lang="en"><i class="fas fa-fist-raised mr-2"></i>4.5 Driving Force of the Revolution</span>
+                        </h3>
+                        <p class="mb-4">
+                            <span lang="vi">Quần chúng nhân dân, bao gồm nông dân, công nhân, thị dân, là động lực chủ yếu của cách mạng. Họ là lực lượng đông đảo nhất, chịu áp bức nặng nề nhất và đóng vai trò quyết định trong việc lật đổ chế độ cũ.</span>
+                            <span lang="en">The masses, including peasants, workers, and townspeople, were the main driving force of the revolution. They were the most numerous force, suffered the heaviest oppression, and played a decisive role in overthrowing the old regime.</span>
+                        </p>
+                        <div class="chart-container h-64 md:h-72 w-full max-w-sm mx-auto">
+                            <canvas id="drivingForceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                 <div class="grid md:grid-cols-2 gap-8">
+                    <div id="section4-6" class="p-6 bg-white rounded-lg shadow-lg">
+                         <h3 class="text-2xl font-semibold mb-2 text-gray-700">
+                            <span lang="vi"><i class="fas fa-trophy mr-2"></i>4.6 Kết quả</span><span lang="en"><i class="fas fa-trophy mr-2"></i>4.6 Results</span>
+                        </h3>
+                        <p>
+                            <span lang="vi">Thắng lợi của cách mạng tư sản đã lật đổ chế độ phong kiến, thực dân, mở đường cho chủ nghĩa tư bản phát triển. Các hình thức nhà nước tư sản được thiết lập, phổ biến là cộng hòa và quân chủ lập hiến.</span>
+                            <span lang="en">The victory of the bourgeois revolution overthrew the feudal and colonial regimes, paving the way for the development of capitalism. Bourgeois state forms were established, commonly republics and constitutional monarchies.</span>
+                        </p>
+                    </div>
+                     <div id="section4-7" class="p-6 bg-white rounded-lg shadow-lg">
+                         <h3 class="text-2xl font-semibold mb-2 text-gray-700">
+                            <span lang="vi"><i class="fas fa-star mr-2"></i>4.7 Ý nghĩa</span><span lang="en"><i class="fas fa-star mr-2"></i>4.7 Significance</span>
+                        </h3>
+                        <p>
+                            <span lang="vi">Cách mạng tư sản có ý nghĩa to lớn, đánh dấu sự thắng lợi của phương thức sản xuất TBCN, thúc đẩy sự phát triển của lực lượng sản xuất và khoa học kỹ thuật. Tư tưởng dân chủ tư sản được lan truyền rộng rãi, tác động đến phong trào cách mạng trên thế giới.</span>
+                            <span lang="en">Bourgeois revolutions hold great significance, marking the victory of the capitalist mode of production, promoting the development of productive forces and science/technology. Bourgeois democratic ideas spread widely, influencing revolutionary movements worldwide.</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="station4" class="mb-12">
+            <div class="p-6 md:p-8 rounded-xl shadow-2xl station-card border-l-8 border-[#FDB913]">
+                <h2 class="text-3xl font-bold mb-4 text-[#FDB913]">
+                    <span lang="vi">Trạm 4: Góc nhìn thời sự - Vận dụng kiến thức</span>
+                    <span lang="en">Station 4: Current Perspectives - Applying Knowledge</span>
+                </h2>
+                
+                <div class="mb-8 p-6 bg-white rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-bold text-center mb-4 text-[#E6007E]">
+                        <span lang="vi"><i class="fas fa-gamepad mr-2"></i>Trò chơi: Ghép đôi thần tốc</span>
+                        <span lang="en"><i class="fas fa-gamepad mr-2"></i>Game: Speedy Matching</span>
+                    </h3>
+                     <p class="text-center mb-4">
+                        <span lang="vi">Hãy ghép đôi các khái niệm ở cột trái với nội dung tương ứng ở cột phải.</span>
+                        <span lang="en">Match the concepts in the left column with the corresponding content in the right column.</span>
+                    </p>
+                    <div class="flex flex-col md:flex-row gap-8 justify-center">
+                        <div id="match-col-1" class="flex flex-col gap-3 flex-1">
+                            <div class="match-item p-3 gradient-bg-blue text-white border-2 border-blue-200 rounded-lg shadow-md" data-match="1"><span lang="vi">Tiền đề kinh tế</span><span lang="en">Economic Prerequisite</span></div>
+                            <div class="match-item p-3 gradient-bg-blue text-white border-2 border-blue-200 rounded-lg shadow-md" data-match="2"><span lang="vi">Mục tiêu chung</span><span lang="en">General Objective</span></div>
+                            <div class="match-item p-3 gradient-bg-blue text-white border-2 border-blue-200 rounded-lg shadow-md" data-match="3"><span lang="vi">Lãnh đạo</span><span lang="en">Leadership</span></div>
+                            <div class="match-item p-3 gradient-bg-blue text-white border-2 border-blue-200 rounded-lg shadow-md" data-match="4"><span lang="vi">Ý nghĩa</span><span lang="en">Significance</span></div>
+                        </div>
+                        <div id="match-col-2" class="flex flex-col gap-3 flex-1">
+                            <div class="match-item p-3 gradient-bg-pink text-white border-2 border-pink-200 rounded-lg shadow-md" data-match="3"><span lang="vi">Giai cấp tư sản và đồng minh</span><span lang="en">Bourgeoisie and its allies</span></div>
+                            <div class="match-item p-3 gradient-bg-pink text-white border-2 border-pink-200 rounded-lg shadow-md" data-match="4"><span lang="vi">Mở đường cho CNTB phát triển, lan tỏa tư tưởng dân chủ</span><span lang="en">Paves way for Capitalism, spreads democratic ideas</span></div>
+                             <div class="match-item p-3 gradient-bg-pink text-white border-2 border-pink-200 rounded-lg shadow-md" data-match="1"><span lang="vi">Kinh tế TBCN phát triển trong lòng xã hội phong kiến</span><span lang="en">Capitalist economy grows within feudal society</span></div>
+                            <div class="match-item p-3 gradient-bg-pink text-white border-2 border-pink-200 rounded-lg shadow-md" data-match="2"><span lang="vi">Lật đổ chế độ phong kiến, mở đường cho CNTB</span><span lang="en">Overthrow feudalism, pave way for Capitalism</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-white rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-semibold mb-4 text-gray-700">
+                        <span lang="vi"><i class="fas fa-link mr-2"></i>Liên hệ thực tiễn: Giá trị sống mãi của các bản Tuyên ngôn</span>
+                        <span lang="en"><i class="fas fa-link mr-2"></i>Practical Connection: The Enduring Value of Declarations</span>
+                    </h3>
+                    <p class="mb-4">
+                        <span lang="vi">Tư tưởng về quyền con người, quyền bình đẳng và tự do trong các bản Tuyên ngôn của Mỹ và Pháp đã vượt qua không gian và thời gian, trở thành nguồn cảm hứng cho các phong trào giải phóng dân tộc trên toàn thế giới, trong đó có Việt Nam.</span>
+                        <span lang="en">The ideas of human rights, equality, and freedom in the American and French Declarations have transcended space and time, becoming a source of inspiration for national liberation movements worldwide, including Vietnam.</span>
+                    </p>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="gradient-bg-blue text-white p-4 rounded-lg shadow-md">
+                            <h4 class="font-bold mb-2">
+                                <span lang="vi">Tuyên ngôn Độc lập Hoa Kỳ (1776)</span>
+                                <span lang="en">U.S. Declaration of Independence (1776)</span>
+                            </h4>
+                            <p class="italic text-sm">
+                                <span lang="vi">"...Tất cả mọi người sinh ra đều có quyền bình đẳng. Tạo hóa cho họ những quyền không ai có thể xâm phạm được; trong những quyền ấy, có quyền được sống, quyền tự do và quyền mưu cầu Hạnh phúc..."</span>
+                                <span lang="en">"...We hold these truths to be self-evident, that all men are created equal, that they are endowed by their Creator with certain unalienable Rights, that among these are Life, Liberty and the pursuit of Happiness..."</span>
+                            </p>
+                             <div class="text-center mt-2">
+                                
+                            </div>
+                        </div>
+                         <div class="gradient-bg-green text-white p-4 rounded-lg shadow-md">
+                            <h4 class="font-bold mb-2">
+                                <span lang="vi">Tuyên ngôn Nhân quyền và Dân quyền Pháp (1789)</span>
+                                <span lang="en">French Declaration of the Rights of Man and of the Citizen (1789)</span>
+                            </h4>
+                            <p class="italic text-sm">
+                                <span lang="vi">"Người ta sinh ra tự do và bình đẳng về quyền lợi, và luôn luôn phải được tự do và bình đẳng về quyền lợi. Những khác biệt xã hội chỉ có thể được thiết lập trên cơ sở lợi ích chung."</span>
+                                <span lang="en">"Men are born and remain free and equal in rights. Social distinctions can be based only on common utility."</span>
+                            </p>
+                             <div class="text-center mt-2">
+                                
+                            </div>
+                        </div>
+                         <div class="gradient-bg-orange text-white p-4 rounded-lg shadow-md col-span-2">
+                            <h4 class="font-bold mb-2">
+                                <span lang="vi">Tuyên ngôn Độc lập Việt Nam (1945)</span>
+                                <span lang="en">Vietnamese Declaration of Independence (1945)</span>
+                            </h4>
+                            <p class="italic text-sm">
+                                <span lang="vi">"Tất cả các dân tộc trên thế giới đều sinh ra bình đẳng, dân tộc nào cũng có quyền sống, quyền sung sướng và quyền tự do. Đây là những lẽ phải không ai chối cãi được."</span>
+                                <span lang="en">"All the peoples on the earth are equal from birth, all the peoples have a right to live, to be happy and free. These are undeniable truths."</span>
+                            </p>
+                             <div class="text-center mt-2">
+                                
+                            </div>
+                        </div>
+                    </div>
+                     <div class="mt-6 gradient-bg-yellow p-6 rounded-lg shadow-md">
+                        <h4 class="text-xl font-bold mb-3 text-white">
+                            <span lang="vi"><i class="fas fa-comments mr-2"></i>Câu hỏi thảo luận nhóm</span>
+                            <span lang="en"><i class="fas fa-comments mr-2"></i>Group Discussion Question</span>
+                        </h4>
+                        <p class="text-lg text-gray-800 mb-4">
+                            <span lang="vi">Theo em, việc Chủ tịch Hồ Chí Minh trích dẫn Tuyên ngôn của Mỹ và Pháp có ý nghĩa như thế nào? Những giá trị của các bản tuyên ngôn này còn ảnh hưởng đến thế giới ngày nay ra sao?</span>
+                            <span lang="en">In your opinion, what is the significance of President Ho Chi Minh quoting the American and French Declarations? How do the values of these declarations still influence the world today?</span>
+                        </p>
+                        <h5 class="text-lg font-bold text-gray-700">Gợi ý câu trả lời:</h5>
+                        <ul class="list-disc list-inside text-gray-700 space-y-2">
+                            <li>**Về ý nghĩa việc trích dẫn:**
+                                <ul class="list-circle list-inside ml-4 space-y-1">
+                                    <li>Khẳng định tính chính nghĩa, phổ quát của cuộc đấu tranh giành độc lập.</li>
+                                    <li>Tận dụng các giá trị tiến bộ của nhân loại để đấu tranh chống lại các thế lực thực dân.</li>
+                                    <li>Tuyên bố với thế giới rằng Việt Nam cũng là một quốc gia có chủ quyền và có quyền được hưởng những quyền cơ bản của con người và dân tộc.</li>
+                                </ul>
+                            </li>
+                            <li>**Về ảnh hưởng đến thế giới ngày nay:**
+                                <ul class="list-circle list-inside ml-4 space-y-1">
+                                    <li>**Quyền Con người:** Các giá trị về tự do, bình đẳng, mưu cầu hạnh phúc vẫn là nền tảng của luật pháp quốc tế.</li>
+                                    <li>**Tự Quyết Dân tộc:** Thúc đẩy phong trào đấu tranh giành độc lập và chống áp bức ở các quốc gia khác.</li>
+                                    <li>**Pháp quyền:** Đóng góp vào việc hình thành các hệ thống chính trị dân chủ và thượng tôn pháp luật trên khắp thế giới.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-8 border-t-2 border-gray-200 pt-6">
+                        <h4 class="text-xl font-bold mb-3 text-gray-700">
+                             <span lang="vi"><i class="fas fa-expand mr-2"></i>Gợi ý Hoạt động Mở rộng</span>
+                            <span lang="en"><i class="fas fa-expand mr-2"></i>Suggestions for Extension Activities</span>
+                        </h4>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700">
+                            <li>
+                                <span lang="vi">Tổ chức một buổi tranh luận nhỏ về "Quyền tự do và bình đẳng trong xã hội hiện đại."</span>
+                                <span lang="en">Organize a small debate on "Freedom and equality in modern society."</span>
+                            </li>
+                            <li>
+                                <span lang="vi">Yêu cầu học sinh nghiên cứu một phong trào giải phóng dân tộc khác (ví dụ: ở châu Phi hoặc châu Mỹ Latinh) và trình bày xem họ đã sử dụng tư tưởng trong các bản Tuyên ngôn của Mỹ/Pháp/Việt Nam như thế nào.</span>
+                                <span lang="en">Ask students to research another national liberation movement (e.g., in Africa or Latin America) and present on how they used the ideas from the American/French/Vietnamese Declarations.</span>
+                            </li>
+                            <li>
+                                <span lang="vi">Thực hiện một dự án sáng tạo (video, podcast, infographic) về "Giá trị của các bản Tuyên ngôn đối với thế hệ trẻ ngày nay".</span>
+                                <span lang="en">Create a creative project (video, podcast, infographic) about "The value of these Declarations for today's youth".</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white text-center p-4 shadow-inner">
+        <p>
+            <span lang="vi">Sản phẩm được thiết kế cho mục đích giáo dục - Lịch sử lớp 11</span>
+            <span lang="en">Product designed for educational purposes - History Grade 11</span>
+        </p>
+    </footer>
+
+    <script>
+        let currentLang = 'vi';
+        
+        function setLang(lang) {
+            currentLang = lang;
+            document.documentElement.lang = lang;
+            document.querySelectorAll('[lang="vi"]').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('[lang="en"]').forEach(el => el.style.display = 'none');
+            document.querySelectorAll(`[lang="${lang}"]`).forEach(el => el.style.display = 'inline');
+
+            Object.values(Chart.instances).forEach(chart => {
+                updateChartLanguage(chart);
+            });
+        }
+        
+        function updateChartLanguage(chart) {
+             const chartData = chart.originalData;
+             if (!chartData) return;
+
+             chart.data.labels = chartData.labels[currentLang];
+             chart.data.datasets.forEach((dataset, i) => {
+                 dataset.label = chartData.datasets[i].label[currentLang];
+             });
+             chart.options.plugins.title.text = chartData.title[currentLang];
+             chart.update();
+        }
+
+        function wrapLabel(label) {
+            if (label.length > 16) {
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = '';
+                words.forEach(word => {
+                    if ((currentLine + word).length > 16) {
+                        lines.push(currentLine.trim());
+                        currentLine = '';
+                    }
+                    currentLine += word + ' ';
+                });
+                lines.push(currentLine.trim());
+                return lines;
+            }
+            return label;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setLang('vi');
+
+            const tooltipTitleCallback = {
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join(' ');
+                                } else {
+                                  return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            
+            const economicData = {
+                title: { vi: 'Sản lượng công nghiệp thủ công Anh (giả định)', en: 'English Handicraft Output (Simulated)' },
+                labels: { vi: ['Thế kỷ 15', 'Thế kỷ 16', 'Thế kỷ 17'], en: ['15th Century', '16th Century', '17th Century'] },
+                datasets: [{
+                    label: { vi: 'Sản lượng', en: 'Output' },
+                    data: [100, 250, 550],
+                    backgroundColor: 'rgba(125, 186, 67, 0.6)',
+                    borderColor: 'rgba(125, 186, 67, 1)',
+                    borderWidth: 1
+                }]
+            };
+            const economicChart = new Chart(document.getElementById('economicChart'), {
+                type: 'bar', data: { labels: economicData.labels.vi, datasets: [{...economicData.datasets[0], label: economicData.datasets[0].label.vi }] },
+                options: { ...tooltipTitleCallback, responsive: true, maintainAspectRatio: false, plugins: { ...tooltipTitleCallback.plugins, title: { display: true, text: economicData.title.vi } } }
+            });
+            economicChart.originalData = economicData;
+
+            const politicalData = {
+                title: { vi: 'Cơ cấu 3 đẳng cấp xã hội Pháp', en: 'Structure of the 3 Estates in France' },
+                labels: { vi: ['Đẳng cấp thứ ba (98%)', 'Tăng lữ (1%)', 'Quý tộc (1%)'], en: ['Third Estate (98%)', 'Clergy (1%)', 'Nobility (1%)'] },
+                datasets: [{
+                    label: { vi: 'Tỉ lệ dân số', en: 'Population Ratio' },
+                    data: [98, 1, 1],
+                    backgroundColor: ['#F47B20', '#00A9E0', '#FDB913']
+                }]
+            };
+            const politicalChart = new Chart(document.getElementById('politicalChart'), {
+                type: 'pie', data: { labels: politicalData.labels.vi, datasets: [{...politicalData.datasets[0], label: politicalData.datasets[0].label.vi }] },
+                options: { ...tooltipTitleCallback, responsive: true, maintainAspectRatio: false, plugins: { ...tooltipTitleCallback.plugins, title: { display: true, text: politicalData.title.vi } } }
+            });
+            politicalChart.originalData = politicalData;
+
+            const socialData = {
+                title: { vi: 'Gánh nặng thuế theo đẳng cấp (giả định)', en: 'Tax Burden by Estate (Simulated)' },
+                labels: { vi: ['Tăng lữ & Quý tộc', 'Đẳng cấp thứ ba'], en: ['Clergy & Nobility', 'Third Estate'] },
+                datasets: [{
+                    label: { vi: '% Tổng thuế', en: '% of Total Tax' },
+                    data: [5, 95],
+                    backgroundColor: ['rgba(230, 0, 126, 0.6)', 'rgba(244, 123, 32, 0.6)'],
+                    borderColor: ['rgba(230, 0, 126, 1)', 'rgba(244, 123, 32, 1)'],
+                    borderWidth: 1
+                }]
+            };
+            const socialChart = new Chart(document.getElementById('socialChart'), {
+                type: 'bar', data: { labels: socialData.labels.vi, datasets: [{...socialData.datasets[0], label: socialData.datasets[0].label.vi }] },
+                options: { ...tooltipTitleCallback, indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { ...tooltipTitleCallback.plugins, title: { display: true, text: socialData.title.vi } } }
+            });
+            socialChart.originalData = socialData;
+
+            const ideologyData = {
+                 title: { vi: 'Số lượng ấn phẩm Triết học Ánh sáng (giả định)', en: 'Number of Enlightenment Publications (Simulated)' },
+                 labels: { vi: ['1700-1720', '1721-1740', '1741-1760', '1761-1780'], en: ['1700-1720', '1721-1740', '1741-1760', '1761-1780'] },
+                 datasets: [{
+                     label: { vi: 'Số lượng ấn phẩm', en: 'Number of Publications' },
+                     data: [50, 150, 400, 900],
+                     borderColor: '#00A9E0',
+                     backgroundColor: 'rgba(0, 169, 224, 0.2)',
+                     fill: true,
+                     tension: 0.4
+                 }]
+            };
+            const ideologyChart = new Chart(document.getElementById('ideologyChart'), {
+                 type: 'line', data: { labels: ideologyData.labels.vi, datasets: [{...ideologyData.datasets[0], label: ideologyData.datasets[0].label.vi }] },
+                 options: { ...tooltipTitleCallback, responsive: true, maintainAspectRatio: false, plugins: { ...tooltipTitleCallback.plugins, title: { display: true, text: ideologyData.title.vi } } }
+            });
+            ideologyChart.originalData = ideologyData;
+            
+            const leadershipData = {
+                title: { vi: 'Thành phần lãnh đạo cách mạng', en: 'Composition of Revolutionary Leadership' },
+                labels: { vi: ['Tư sản', 'Quý tộc mới', 'Chủ nô'], en: ['Bourgeoisie', 'New Aristocracy', 'Slave Owners'] },
+                datasets: [{
+                    label: { vi: 'Vai trò lãnh đạo (%)', en: 'Leadership Role (%)' },
+                    data: [70, 20, 10],
+                    backgroundColor: ['#00A9E0', '#F47B20', '#E6007E']
+                }]
+            };
+            const leadershipChart = new Chart(document.getElementById('leadershipChart'), {
+                type: 'doughnut', data: { labels: leadershipData.labels.vi, datasets: [{...leadershipData.datasets[0], label: leadershipData.datasets[0].label.vi }] },
+                options: { ...tooltipTitleCallback, responsive: true, maintainAspectRatio: false, plugins: { ...tooltipTitleCallback.plugins, title: { display: true, text: leadershipData.title.vi } } }
+            });
+            leadershipChart.originalData = leadershipData;
+
+            const drivingForceData = {
+                 title: { vi: 'Thành phần động lực cách mạng', en: 'Composition of Revolutionary Driving Forces' },
+                 labels: { vi: ['Nông dân', 'Bình dân thành thị', 'Công nhân'], en: ['Peasants', 'Urban Commoners', 'Workers'] },
+                 datasets: [{
+                     label: { vi: 'Tỉ lệ tham gia (%)', en: 'Participation Rate (%)' },
+                     data: [65, 25, 10],
+                     backgroundColor: ['#7DBA43', '#FDB913', '#F47B20']
+                 }]
+            };
+            const drivingForceChart = new Chart(document.getElementById('drivingForceChart'), {
+                type: 'pie', data: { labels: drivingForceData.labels.vi, datasets: [{...drivingForceData.datasets[0], label: drivingForceData.datasets[0].label.vi }] },
+                options: { ...tooltipTitleCallback, responsive: true, maintainAspectRatio: false, plugins: { ...tooltipTitleCallback.plugins, title: { display: true, text: drivingForceData.title.vi } } }
+            });
+            drivingForceChart.originalData = drivingForceData;
+            
+            const englandTaskData = {
+                title: { vi: 'CMTS Anh', en: 'English Revolution' },
+                labels: { vi: ['Dân chủ', 'Dân tộc'], en: ['Democratic', 'National'] },
+                datasets: [{
+                    label: { vi: 'Mức độ hoàn thành', en: 'Completion Level' },
+                    data: [90, 10],
+                    backgroundColor: ['#FDB913', '#E6007E']
+                }]
+            };
+            const englandTaskChart = new Chart(document.getElementById('englandTaskChart'), {
+                type: 'doughnut', data: { labels: englandTaskData.labels.vi, datasets: [{...englandTaskData.datasets[0], label: englandTaskData.datasets[0].label.vi }] },
+                options: { ...tooltipTitleCallback, responsive: true, maintainAspectRatio: false, plugins: { ...tooltipTitleCallback.plugins, title: { display: true, text: englandTaskData.title.vi } } }
+            });
+            englandTaskChart.originalData = englandTaskData;
+
+            const americaTaskData = {
+                title: { vi: 'CM Bắc Mỹ', en: 'North American Revolution' },
+                labels: { vi: ['Dân tộc', 'Dân chủ'], en: ['National', 'Democratic'] },
+                datasets: [{
+                    label: { vi: 'Mức độ hoàn thành', en: 'Completion Level' },
+                    data: [85, 15],
+                    backgroundColor: ['#FDB913', '#E6007E']
+                }]
+            };
+            const americaTaskChart = new Chart(document.getElementById('americaTaskChart'), {
+                type: 'doughnut', data: { labels: americaTaskData.labels.vi, datasets: [{...americaTaskData.datasets[0], label: americaTaskData.datasets[0].label.vi }] },
+                options: { ...tooltipTitleCallback, responsive: true, maintainAspectRatio: false, plugins: { ...tooltipTitleCallback.plugins, title: { display: true, text: americaTaskData.title.vi } } }
+            });
+            americaTaskChart.originalData = americaTaskData;
+
+            const franceTaskData = {
+                title: { vi: 'CMTS Pháp', en: 'French Revolution' },
+                labels: { vi: ['Dân tộc', 'Dân chủ'], en: ['National', 'Democratic'] },
+                datasets: [{
+                    label: { vi: 'Mức độ hoàn thành', en: 'Completion Level' },
+                    data: [95, 95],
+                    backgroundColor: ['#FDB913', '#E6007E']
+                }]
+            };
+            const franceTaskChart = new Chart(document.getElementById('franceTaskChart'), {
+                type: 'doughnut', data: { labels: franceTaskData.labels.vi, datasets: [{...franceTaskData.datasets[0], label: franceTaskData.datasets[0].label.vi }] },
+                options: { ...tooltipTitleCallback, responsive: true, maintainAspectRatio: false, plugins: { ...tooltipTitleCallback.plugins, title: { display: true, text: franceTaskData.title.vi } } }
+            });
+            franceTaskChart.originalData = franceTaskData;
+
+
+            const draggables = document.querySelectorAll('.draggable');
+            const dropZones = document.querySelectorAll('.drop-zone');
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', () => {
+                    draggable.classList.add('dragging');
+                });
+                draggable.addEventListener('dragend', () => {
+                    draggable.classList.remove('dragging');
+                });
+            });
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    zone.classList.add('over');
+                });
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('over');
+                });
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('over');
+                    const draggable = document.querySelector('.dragging');
+                    if (draggable && zone.dataset.type === draggable.dataset.type) {
+                        const dropContent = zone.querySelector('.drop-content');
+                        draggable.classList.remove('draggable');
+                        draggable.setAttribute('draggable', 'false');
+                        draggable.style.cursor = 'default';
+                        dropContent.appendChild(draggable);
+                    }
+                });
+            });
+
+            let selected = null;
+            let audioCtx;
+            function playSound() {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.5);
+                oscillator.start(audioCtx.currentTime);
+                oscillator.stop(audioCtx.currentTime + 0.5);
+            }
+            document.querySelectorAll('.match-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    if (item.classList.contains('correct')) return;
+                    if (!selected) {
+                        selected = item;
+                        item.classList.add('selected');
+                    } else {
+                        if (selected === item) {
+                            selected.classList.remove('selected');
+                            selected = null;
+                        } else {
+                            if (selected.dataset.match === item.dataset.match) {
+                                selected.classList.add('correct');
+                                item.classList.add('correct');
+                                playSound();
+                                selected = null;
+                            } else {
+                                selected.classList.remove('selected');
+                                selected = null;
+                            }
+                        }
+                    }
+                });
+            });
+
+            const cycleContainer = document.querySelector('.cycle-container');
+            const items = [
+                { text: { vi: 'Tiền đề kinh tế', en: 'Economic Prerequisite' }, color: '#00A9E0' },
+                { text: { vi: 'Tiền đề xã hội', en: 'Social Prerequisite' }, color: '#F47B20' },
+                { text: { vi: 'Tiền đề chính trị', en: 'Political Prerequisite' }, color: '#E6007E' },
+                { text: { vi: 'Tiền đề tư tưởng', en: 'Ideological Prerequisite' }, color: '#7DBA43' },
+                { text: { vi: 'BÙNG NỔ CÁCH MẠNG', en: 'REVOLUTION OUTBREAK' }, color: '#d9534f' }
+            ];
+            const numItems = items.length;
+            const radius = cycleContainer.offsetWidth / 2.5; 
+            const centerX = cycleContainer.offsetWidth / 2;
+            const centerY = cycleContainer.offsetHeight / 2;
+
+            for (let i = 0; i < numItems; i++) {
+                const angle = (i / numItems) * 2 * Math.PI - (Math.PI / 2);
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+                const itemEl = document.createElement('div');
+                itemEl.className = 'cycle-item';
+                itemEl.style.left = `${x}px`;
+                itemEl.style.top = `${y}px`;
+                itemEl.style.backgroundColor = items[i].color;
+                
+                const textVi = document.createElement('span');
+                textVi.setAttribute('lang', 'vi');
+                textVi.textContent = items[i].text.vi;
+                const textEn = document.createElement('span');
+                textEn.setAttribute('lang', 'en');
+                textEn.textContent = items[i].text.en;
+                
+                itemEl.appendChild(textVi);
+                itemEl.appendChild(textEn);
+                cycleContainer.appendChild(itemEl);
+
+                const nextAngle = ((i + 0.5) / numItems) * 2 * Math.PI - (Math.PI / 2);
+                const arrowX = centerX + (radius * 0.7) * Math.cos(nextAngle);
+                const arrowY = centerY + (radius * 0.7) * Math.sin(nextAngle);
+                const arrow = document.createElement('div');
+                arrow.className = 'cycle-arrow';
+                arrow.style.left = `${arrowX}px`;
+                arrow.style.top = `${arrowY}px`;
+                arrow.style.borderColor = `transparent transparent transparent ${items[i].color}`;
+                arrow.style.borderWidth = '10px 0 10px 15px';
+                arrow.style.transform = `translate(-50%, -50%) rotate(${nextAngle + Math.PI/2}rad)`;
+                cycleContainer.appendChild(arrow);
+            }
+        });
+    </script>
+</body>
+</html>
